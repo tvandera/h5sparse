@@ -9,6 +9,10 @@ FORMAT_DICT = {
     'csc': ss.csc_matrix,
 }
 
+indptr_dtype  = np.int64
+indices_dtype = np.int32
+rows_dtype    = np.int64
+cols_dtype    = np.int64
 
 def get_format_str(data):
     for format_str, format_class in six.viewitems(FORMAT_DICT):
@@ -43,19 +47,21 @@ class Group(h5py.Group):
         else:
             raise ValueError("Unexpected item type.")
 
-    def create_dataset_base(self, name, sparse_format, shape, data, indices, indptr,
-                            dtype, indptr_dtype, indices_dtype, **kwargs):
+    def create_dataset_compressed(self, name, sparse_format, shape, data, indices, indptr,
+                            dtype, **kwargs):
+        """Create a dataset in csc or csr format"""
+        assert sparse_format in ("csc", "csr")
+
         group = self.create_group(name)
         group.attrs['h5sparse_format'] = sparse_format
-        group.attrs['h5sparse_shape'] = shape
+        group.attrs['h5sparse_shape']  = shape
         group.create_dataset('data',    data=data,    dtype=dtype,         **kwargs)
         group.create_dataset('indices', data=indices, dtype=indices_dtype, **kwargs)
         group.create_dataset('indptr',  data=indptr,  dtype=indptr_dtype,  **kwargs)
         return group
 
     def create_dataset(self, name, shape=None, dtype=None, data=None,
-                       sparse_format=None, indptr_dtype=np.int64, indices_dtype=np.int32,
-                       **kwargs):
+                       sparse_format=None, **kwargs):
         """Create 3 datasets in a group to represent the sparse array.
 
         Parameters
@@ -64,25 +70,25 @@ class Group(h5py.Group):
         """
         if isinstance(data, Dataset):
             assert sparse_format is None
-            group = self.create_dataset_base(name,
+            group = self.create_dataset_compressed(name,
                                             data.attrs['h5sparse_format'],
                                             data.attrs['h5sparse_shape'],
                                             data.h5py_group['data'],
                                             data.h5py_group['indices'],
                                             data.h5py_group['indptr'],
-                                            dtype, indptr_dtype, indices_dtype,
+                                            dtype,
                                             **kwargs)
         elif ss.issparse(data):
             if sparse_format is not None:
                 format_class = get_format_class(sparse_format)
                 data = format_class(data)
-            group = self.create_dataset_base(name,
+            group = self.create_dataset_compressed(name,
                                               get_format_str(data),
                                               data.shape,
                                               data.data,
                                               data.indices,
                                               data.indptr,
-                                              dtype, indices_dtype, indptr_dtype,
+                                              dtype,
                                               **kwargs)
         elif data is None and sparse_format is not None:
             format_class = get_format_class(sparse_format)
@@ -91,13 +97,13 @@ class Group(h5py.Group):
             if shape is None:
                 shape = (0, 0)
             data = format_class(shape, dtype=dtype)
-            group = self.create_dataset_base(name,
+            group = self.create_dataset_compressed(name,
                                               get_format_str(data),
                                               data.shape,
                                               data.data,
                                               data.indices,
                                               data.indptr,
-                                              dtype, indices_dtype, indptr_dtype,
+                                              dtype,
                                               **kwargs)
         else:
             # forward the arguments to h5py
@@ -127,8 +133,6 @@ class Dataset(h5py.Group):
         self.shape = tuple(self.attrs['h5sparse_shape'])
         self.format_str = self.attrs['h5sparse_format']
         self.dtype = h5py_group['data'].dtype
-        self.indptr_dtype = h5py_group['indptr'].dtype
-        self.indices_dtype = h5py_group['indices'].dtype
 
     def __getitem__(self, key):
         if isinstance(key, slice):
