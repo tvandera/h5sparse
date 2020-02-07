@@ -17,7 +17,7 @@ def test_create_and_read_dataset():
                                   dtype=np.float64)
     with h5sparse.File(h5_path, 'w') as h5f:
         h5f.create_dataset('sparse/matrix', data=sparse_matrix)
-    with h5sparse.File(h5_path) as h5f:
+    with h5sparse.File(h5_path, 'r') as h5f:
         assert 'sparse' in h5f
         assert 'matrix' in h5f['sparse']
         assert (h5f['sparse']['matrix'][1:3] != sparse_matrix[1:3]).size == 0
@@ -39,7 +39,7 @@ def test_create_dataset_with_format_change():
                                   dtype=np.float64)
     with h5sparse.File(h5_path, 'w') as h5f:
         h5f.create_dataset('sparse/matrix', data=sparse_matrix, sparse_format='csc')
-    with h5sparse.File(h5_path) as h5f:
+    with h5sparse.File(h5_path, 'r') as h5f:
         assert 'sparse' in h5f
         assert 'matrix' in h5f['sparse']
         assert h5f['sparse']['matrix'].format_str == 'csc'
@@ -59,7 +59,7 @@ def test_create_empty_sparse_dataset():
     h5_path = mkstemp(suffix=".h5")[1]
     with h5sparse.File(h5_path, 'w') as h5f:
         h5f.create_dataset('sparse/matrix', sparse_format='csr')
-    with h5sparse.File(h5_path) as h5f:
+    with h5sparse.File(h5_path, 'r') as h5f:
         assert 'sparse' in h5f
         assert 'matrix' in h5f['sparse']
         assert h5f['sparse']['matrix'].format_str == 'csr'
@@ -140,6 +140,6 @@ def test_create_empty_dataset():
     h5_path = mkstemp(suffix=".h5")[1]
     with h5sparse.File(h5_path, 'w') as h5f:
         h5f.create_dataset('empty_data', shape=(100, 200))
-    with h5sparse.File(h5_path) as h5f:
+    with h5sparse.File(h5_path, 'r') as h5f:
         assert h5f['empty_data'].shape == (100, 200)
     os.remove(h5_path)
