@@ -12,8 +12,8 @@ FORMAT_DICT = {
 
 indptr_dtype  = np.int64
 indices_dtype = np.int32
-rows_dtype    = np.int64
-cols_dtype    = np.int64
+row_dtype    = np.int64
+col_dtype    = np.int64
 
 def get_format_str(data):
     for format_str, format_class in six.viewitems(FORMAT_DICT):
@@ -64,7 +64,7 @@ class Group(h5py.Group):
         group.create_dataset('indptr',  data=indptr,  dtype=indptr_dtype,  **kwargs)
         return group
 
-    def create_dataset_coo(self, name, sparse_format, shape, data, rows, cols,
+    def create_dataset_coo(self, name, sparse_format, shape, data, row, col,
                             dtype, **kwargs):
         """Create a dataset in csc or csr format"""
         assert sparse_format == "coo"
@@ -73,8 +73,8 @@ class Group(h5py.Group):
         group.attrs['h5sparse_format'] = sparse_format
         group.attrs['h5sparse_shape']  = shape
         group.create_dataset('data', data=data, dtype=dtype,      **kwargs)
-        group.create_dataset('rows', data=rows, dtype=rows_dtype, **kwargs)
-        group.create_dataset('cols', data=cols, dtype=cols_dtype, **kwargs)
+        group.create_dataset('row', data=row, dtype=row_dtype, **kwargs)
+        group.create_dataset('col', data=col, dtype=col_dtype, **kwargs)
         return group
 
     def create_dataset_from_dataset(self, name, data, dtype, **kwargs):
@@ -93,8 +93,8 @@ class Group(h5py.Group):
                                             data.attrs['h5sparse_format'],
                                             data.attrs['h5sparse_shape'],
                                             data.h5py_group['data'],
-                                            data.h5py_group['rows'],
-                                            data.h5py_group['cols'],
+                                            data.h5py_group['row'],
+                                            data.h5py_group['col'],
                                             dtype,
                                             **kwargs)
         return group
@@ -115,8 +115,8 @@ class Group(h5py.Group):
                                                    sparse_format,
                                                    data.shape,
                                                    data.data,
-                                                   data.rows,
-                                                   data.cols,
+                                                   data.row,
+                                                   data.col,
                                                    dtype,
                                                    **kwargs)
         return group
