@@ -9,8 +9,6 @@ import scipy.sparse as ss
 import h5sparse
 
 class TestH5Sparse(unittest.TestCase):
-    sparse_class = ss.csr_matrix
-
     def test_create_and_read_dataset(self):
         h5_path = mkstemp(suffix=".h5")[1]
         sparse_matrix = self.sparse_class([[0, 1, 0],
@@ -146,3 +144,18 @@ class TestH5Sparse(unittest.TestCase):
         with h5sparse.File(h5_path, 'r') as h5f:
             assert h5f['empty_data'].shape == (100, 200)
         os.remove(h5_path)
+
+
+class Test5HCSR(TestH5Sparse):
+    sparse_class = ss.csr_matrix
+
+class Test5HCSC(TestH5Sparse):
+    sparse_class = ss.csc_matrix
+
+class Test5HCOO(TestH5Sparse):
+    sparse_class = ss.coo_matrix
+
+if __name__ == '__main__':
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(Test5HCSR))
+    unittest.TextTestRunner().run(suite)
