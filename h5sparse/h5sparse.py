@@ -202,16 +202,25 @@ class Dataset(h5py.Group):
             else:
                 raise NotImplementedError("Slicing for format {} is not implemented."
                                           .format(self.format_str))
+            format_class = get_format_class(self.attrs['h5sparse_format'])
+            return format_class((data, indices, indptr), shape=shape)
         elif isinstance(key, tuple) and key == ():
-            data = self.h5py_group['data'][()]
-            indices = self.h5py_group['indices'][()]
-            indptr = self.h5py_group['indptr'][()]
-            shape = self.shape
+            if (is_compressed_format(self.format_str)):
+                data = self.h5py_group['data'][()]
+                indices = self.h5py_group['indices'][()]
+                indptr = self.h5py_group['indptr'][()]
+                shape = self.shape
+                format_class = get_format_class(self.attrs['h5sparse_format'])
+                return format_class((data, indices, indptr), shape=shape)
+            else:
+                data = self.h5py_group['data'][()]
+                row = self.h5py_group['row'][()]
+                col = self.h5py_group['col'][()]
+                shape = self.shape
+                format_class = get_format_class(self.attrs['h5sparse_format'])
+                return format_class((data, (row, col)), shape=shape)
         else:
             raise NotImplementedError("Only support one slice as index.")
-
-        format_class = get_format_class(self.attrs['h5sparse_format'])
-        return format_class((data, indices, indptr), shape=shape)
 
     @property
     def value(self):

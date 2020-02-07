@@ -9,34 +9,6 @@ import scipy.sparse as ss
 import h5sparse
 
 class TestH5Sparse(unittest.TestCase):
-
-
-
-    def test_create_dataset_with_format_change(self):
-        h5_path = mkstemp(suffix=".h5")[1]
-        sparse_matrix = self.sparse_class([[0, 1, 0, 1],
-                                    [0, 0, 1, 0],
-                                    [0, 0, 0, 1],
-                                    [1, 1, 0, 1]],
-                                    dtype=np.float64)
-        with h5sparse.File(h5_path, 'w') as h5f:
-            h5f.create_dataset('sparse/matrix', data=sparse_matrix, sparse_format='csc')
-        with h5sparse.File(h5_path, 'r') as h5f:
-            assert 'sparse' in h5f
-            assert 'matrix' in h5f['sparse']
-            assert h5f['sparse']['matrix'].format_str == 'csc'
-            result_matrix = h5f['sparse']['matrix'][()]
-            assert isinstance(result_matrix, ss.csc_matrix)
-            assert (result_matrix != sparse_matrix).size == 0
-            assert (h5f['sparse']['matrix'][1:3] != sparse_matrix[:, 1:3]).size == 0
-            assert (h5f['sparse']['matrix'][2:] != sparse_matrix[:, 2:]).size == 0
-            assert (h5f['sparse']['matrix'][:2] != sparse_matrix[:, :2]).size == 0
-            assert (h5f['sparse']['matrix'][-2:] != sparse_matrix[:, -2:]).size == 0
-            assert (h5f['sparse']['matrix'][:-2] != sparse_matrix[:, :-2]).size == 0
-
-        os.remove(h5_path)
-
-
     def test_create_empty_sparse_dataset(self):
         h5_path = mkstemp(suffix=".h5")[1]
         format_str = h5sparse.get_format_str(self.sparse_class((0,0)))
@@ -75,8 +47,6 @@ class TestH5Sparse(unittest.TestCase):
 
         os.remove(from_h5_path)
         os.remove(to_h5_path)
-
-
 
     def test_numpy_array(self):
         h5_path = mkstemp(suffix=".h5")[1]
@@ -152,6 +122,30 @@ class Test5HCSR(TestH5Sparse):
 
         os.remove(h5_path)
 
+    def test_create_dataset_with_format_change(self):
+        h5_path = mkstemp(suffix=".h5")[1]
+        sparse_matrix = self.sparse_class([[0, 1, 0, 1],
+                                    [0, 0, 1, 0],
+                                    [0, 0, 0, 1],
+                                    [1, 1, 0, 1]],
+                                    dtype=np.float64)
+        with h5sparse.File(h5_path, 'w') as h5f:
+            h5f.create_dataset('sparse/matrix', data=sparse_matrix, sparse_format='csc')
+        with h5sparse.File(h5_path, 'r') as h5f:
+            assert 'sparse' in h5f
+            assert 'matrix' in h5f['sparse']
+            assert h5f['sparse']['matrix'].format_str == 'csc'
+            result_matrix = h5f['sparse']['matrix'][()]
+            assert isinstance(result_matrix, ss.csc_matrix)
+            assert (result_matrix != sparse_matrix).size == 0
+            assert (h5f['sparse']['matrix'][1:3] != sparse_matrix[:, 1:3]).size == 0
+            assert (h5f['sparse']['matrix'][2:] != sparse_matrix[:, 2:]).size == 0
+            assert (h5f['sparse']['matrix'][:2] != sparse_matrix[:, :2]).size == 0
+            assert (h5f['sparse']['matrix'][-2:] != sparse_matrix[:, -2:]).size == 0
+            assert (h5f['sparse']['matrix'][:-2] != sparse_matrix[:, :-2]).size == 0
+
+        os.remove(h5_path)
+
 class Test5HCSC(TestH5Sparse):
     sparse_class = ss.csc_matrix
 
@@ -162,4 +156,5 @@ if __name__ == '__main__':
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Test5HCSR))
     suite.addTest(unittest.makeSuite(Test5HCSC))
+    suite.addTest(unittest.makeSuite(Test5HCOO))
     unittest.TextTestRunner().run(suite)
