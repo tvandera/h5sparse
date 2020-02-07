@@ -11,7 +11,7 @@ FORMAT_DICT = {
 }
 
 indptr_dtype  = np.int64
-indices_dtype = np.int32
+indices_dtype = np.int64
 row_dtype    = np.int64
 col_dtype    = np.int64
 
