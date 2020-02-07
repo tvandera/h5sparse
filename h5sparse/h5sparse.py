@@ -43,6 +43,16 @@ class Group(h5py.Group):
         else:
             raise ValueError("Unexpected item type.")
 
+    def create_dataset_base(self, name, sparse_format, shape, data, indices, indptr,
+                            dtype, indptr_dtype, indices_dtype, **kwargs):
+        group = self.create_group(name)
+        group.attrs['h5sparse_format'] = sparse_format
+        group.attrs['h5sparse_shape'] = shape
+        group.create_dataset('data',    data=data,    dtype=dtype,         **kwargs)
+        group.create_dataset('indices', data=indices, dtype=indices_dtype, **kwargs)
+        group.create_dataset('indptr',  data=indptr,  dtype=indptr_dtype,  **kwargs)
+        return group
+
     def create_dataset(self, name, shape=None, dtype=None, data=None,
                        sparse_format=None, indptr_dtype=np.int64, indices_dtype=np.int32,
                        **kwargs):
@@ -54,25 +64,26 @@ class Group(h5py.Group):
         """
         if isinstance(data, Dataset):
             assert sparse_format is None
-            group = self.create_group(name)
-            group.attrs['h5sparse_format'] = data.attrs['h5sparse_format']
-            group.attrs['h5sparse_shape'] = data.attrs['h5sparse_shape']
-            group.create_dataset('data', data=data.h5py_group['data'],
-                                 dtype=dtype, **kwargs)
-            group.create_dataset('indices', data=data.h5py_group['indices'],
-                                 dtype=indices_dtype, **kwargs)
-            group.create_dataset('indptr', data=data.h5py_group['indptr'],
-                                 dtype=indptr_dtype, **kwargs)
+            group = self.create_dataset_base(name,
+                                            data.attrs['h5sparse_format'],
+                                            data.attrs['h5sparse_shape'],
+                                            data.h5py_group['data'],
+                                            data.h5py_group['indices'],
+                                            data.h5py_group['indptr'],
+                                            dtype, indptr_dtype, indices_dtype,
+                                            **kwargs)
         elif ss.issparse(data):
             if sparse_format is not None:
                 format_class = get_format_class(sparse_format)
                 data = format_class(data)
-            group = self.create_group(name)
-            group.attrs['h5sparse_format'] = get_format_str(data)
-            group.attrs['h5sparse_shape'] = data.shape
-            group.create_dataset('data', data=data.data, dtype=dtype, **kwargs)
-            group.create_dataset('indices', data=data.indices, dtype=indices_dtype, **kwargs)
-            group.create_dataset('indptr', data=data.indptr, dtype=indptr_dtype, **kwargs)
+            group = self.create_dataset_base(name,
+                                              get_format_str(data),
+                                              data.shape,
+                                              data.data,
+                                              data.indices,
+                                              data.indptr,
+                                              dtype, indices_dtype, indptr_dtype,
+                                              **kwargs)
         elif data is None and sparse_format is not None:
             format_class = get_format_class(sparse_format)
             if dtype is None:
@@ -80,12 +91,14 @@ class Group(h5py.Group):
             if shape is None:
                 shape = (0, 0)
             data = format_class(shape, dtype=dtype)
-            group = self.create_group(name)
-            group.attrs['h5sparse_format'] = get_format_str(data)
-            group.attrs['h5sparse_shape'] = data.shape
-            group.create_dataset('data', data=data.data, dtype=dtype, **kwargs)
-            group.create_dataset('indices', data=data.indices, dtype=indices_dtype, **kwargs)
-            group.create_dataset('indptr', data=data.indptr, dtype=indptr_dtype, **kwargs)
+            group = self.create_dataset_base(name,
+                                              get_format_str(data),
+                                              data.shape,
+                                              data.data,
+                                              data.indices,
+                                              data.indptr,
+                                              dtype, indices_dtype, indptr_dtype,
+                                              **kwargs)
         else:
             # forward the arguments to h5py
             assert sparse_format is None
