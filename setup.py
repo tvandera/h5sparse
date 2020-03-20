@@ -4,7 +4,6 @@ from setuptools import setup
 
 setup_requires = [
     'nose',
-    'coverage',
 ]
 install_requires = [
     'h5py',
