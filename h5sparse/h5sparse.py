@@ -10,10 +10,11 @@ FORMAT_DICT = {
     'coo': ss.coo_matrix,
 }
 
-indptr_dtype  = np.int64
+indptr_dtype = np.int64
 indices_dtype = np.int64
-row_dtype    = np.int64
-col_dtype    = np.int64
+row_dtype = np.int64
+col_dtype = np.int64
+
 
 def get_format_str(data):
     for format_str, format_class in six.viewitems(FORMAT_DICT):
@@ -29,6 +30,7 @@ def get_format_class(format_str):
         raise ValueError("Format {} is not supported."
                          .format(format_str))
     return format_class
+
 
 def is_compressed_format(format_str):
     return format_str in ('csc', 'csr')
@@ -52,27 +54,27 @@ class Group(h5py.Group):
             raise ValueError("Unexpected item type.")
 
     def create_dataset_compressed(self, name, sparse_format, shape, data, indices, indptr,
-                            dtype, **kwargs):
+                                  dtype, **kwargs):
         """Create a dataset in csc or csr format"""
         assert sparse_format in ("csc", "csr")
 
         group = self.create_group(name)
         group.attrs['h5sparse_format'] = sparse_format
-        group.attrs['h5sparse_shape']  = shape
-        group.create_dataset('data',    data=data,    dtype=dtype,         **kwargs)
+        group.attrs['h5sparse_shape'] = shape
+        group.create_dataset('data', data=data, dtype=dtype, **kwargs)
         group.create_dataset('indices', data=indices, dtype=indices_dtype, **kwargs)
-        group.create_dataset('indptr',  data=indptr,  dtype=indptr_dtype,  **kwargs)
+        group.create_dataset('indptr', data=indptr, dtype=indptr_dtype, **kwargs)
         return group
 
     def create_dataset_coo(self, name, sparse_format, shape, data, row, col,
-                            dtype, **kwargs):
+                           dtype, **kwargs):
         """Create a dataset in csc or csr format"""
         assert sparse_format == "coo"
 
         group = self.create_group(name)
         group.attrs['h5sparse_format'] = sparse_format
-        group.attrs['h5sparse_shape']  = shape
-        group.create_dataset('data', data=data, dtype=dtype,      **kwargs)
+        group.attrs['h5sparse_shape'] = shape
+        group.create_dataset('data', data=data, dtype=dtype, **kwargs)
         group.create_dataset('row', data=row, dtype=row_dtype, **kwargs)
         group.create_dataset('col', data=col, dtype=col_dtype, **kwargs)
         return group
@@ -81,13 +83,13 @@ class Group(h5py.Group):
         sparse_format = data.attrs['h5sparse_format']
         if (is_compressed_format(sparse_format)):
             group = self.create_dataset_compressed(name,
-                                            data.attrs['h5sparse_format'],
-                                            data.attrs['h5sparse_shape'],
-                                            data.h5py_group['data'],
-                                            data.h5py_group['indices'],
-                                            data.h5py_group['indptr'],
-                                            dtype,
-                                            **kwargs)
+                                                   data.attrs['h5sparse_format'],
+                                                   data.attrs['h5sparse_shape'],
+                                                   data.h5py_group['data'],
+                                                   data.h5py_group['indices'],
+                                                   data.h5py_group['indptr'],
+                                                   dtype,
+                                                   **kwargs)
         else:
             group = self.create_dataset_coo(name,
                                             data.attrs['h5sparse_format'],
@@ -100,7 +102,7 @@ class Group(h5py.Group):
         return group
 
     def create_dataset_from_scipy(self, name, data, dtype, **kwargs):
-        sparse_format =  get_format_str(data)
+        sparse_format = get_format_str(data)
         if (is_compressed_format(sparse_format)):
             group = self.create_dataset_compressed(name,
                                                    sparse_format,
@@ -112,13 +114,13 @@ class Group(h5py.Group):
                                                    **kwargs)
         else:
             group = self.create_dataset_coo(name,
-                                                   sparse_format,
-                                                   data.shape,
-                                                   data.data,
-                                                   data.row,
-                                                   data.col,
-                                                   dtype,
-                                                   **kwargs)
+                                            sparse_format,
+                                            data.shape,
+                                            data.data,
+                                            data.row,
+                                            data.col,
+                                            dtype,
+                                            **kwargs)
         return group
 
     def create_dataset(self, name, shape=None, dtype=None, data=None,
@@ -137,9 +139,9 @@ class Group(h5py.Group):
                 format_class = get_format_class(sparse_format)
                 data = format_class(data)
             group = self.create_dataset_from_scipy(name,
-                                              data,
-                                              dtype,
-                                              **kwargs)
+                                                   data,
+                                                   dtype,
+                                                   **kwargs)
         elif data is None and sparse_format is not None:
             format_class = get_format_class(sparse_format)
             if dtype is None:
@@ -148,9 +150,9 @@ class Group(h5py.Group):
                 shape = (0, 0)
             data = format_class(shape, dtype=dtype)
             group = self.create_dataset_from_scipy(name,
-                                              data,
-                                              dtype,
-                                              **kwargs)
+                                                   data,
+                                                   dtype,
+                                                   **kwargs)
         else:
             # forward the arguments to h5py
             assert sparse_format is None
