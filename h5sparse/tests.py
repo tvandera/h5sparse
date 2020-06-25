@@ -8,7 +8,7 @@ import scipy.sparse as ss
 
 import h5sparse
 
-class TestH5Sparse(unittest.TestCase):
+class AbstractTestH5Sparse():
     def test_create_empty_sparse_dataset(self):
         h5_path = mkstemp(suffix=".h5")[1]
         format_str = h5sparse.get_format_str(self.sparse_class((0,0)))
@@ -78,7 +78,7 @@ class TestH5Sparse(unittest.TestCase):
         os.remove(h5_path)
 
 
-class Test5HCSR(TestH5Sparse):
+class Test5HCSR(unittest.TestCase, AbstractTestH5Sparse):
     sparse_class = ss.csr_matrix
 
     def test_create_and_read_dataset(self):
@@ -146,15 +146,8 @@ class Test5HCSR(TestH5Sparse):
 
         os.remove(h5_path)
 
-class Test5HCSC(TestH5Sparse):
+class Test5HCSC(unittest.TestCase, AbstractTestH5Sparse):
     sparse_class = ss.csc_matrix
 
-class Test5HCOO(TestH5Sparse):
+class Test5HCOO(unittest.TestCase, AbstractTestH5Sparse):
     sparse_class = ss.coo_matrix
-
-if __name__ == '__main__':
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Test5HCSR))
-    suite.addTest(unittest.makeSuite(Test5HCSC))
-    suite.addTest(unittest.makeSuite(Test5HCOO))
-    unittest.TextTestRunner().run(suite)

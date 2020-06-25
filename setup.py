@@ -13,23 +13,23 @@ install_requires = [
 ]
 tests_require = []
 
-description = "Scipy sparse matrix in HDF5."
+description = "Scipy sparse matrices in HDF5. Sparse COO tensors in HDF5"
 
 long_description = """\
-Please visit  the `Github repository <https://github.com/appier/h5sparse>`_
-for more information.\n
+Sparse matrices from `Github repository <https://github.com/appier/h5sparse>`_
+Sparse tensors from `Github repository <https://github.com/tvandera/h5sparse>`_
 """
 with open('README.rst') as fp:
     long_description += fp.read()
 
 
 setup(
-    name='h5sparse',
-    version="0.1.0",
+    name='h5sparse_tensor',
+    version="0.2.2",
     description=description,
     long_description=long_description,
     author='Appier Inc.',
-    url='https://github.com/appier/h5sparse',
+    url='https://github.com/tvandera/h5sparse',
     setup_requires=setup_requires,
     install_requires=install_requires,
     tests_require=tests_require,
