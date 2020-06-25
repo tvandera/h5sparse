@@ -17,6 +17,7 @@ description = "Scipy sparse matrices in HDF5. Sparse COO tensors in HDF5"
 
 long_description = """\
 Sparse matrices from `original Github repository <https://github.com/appier/h5sparse>`_
+\n
 Sparse tensors from `new Github repository <https://github.com/tvandera/h5sparse>`_
 \n"""
 with open('README.rst') as fp:
@@ -24,7 +25,7 @@ with open('README.rst') as fp:
 
 
 setup(
-    name='h5sparse_tensor',
+    name='h5sparse-tensor',
     version="0.2.2",
     description=description,
     long_description=long_description,

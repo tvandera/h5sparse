@@ -14,7 +14,7 @@ Installation
 ------------
 .. code:: bash
 
-   pip install h5sparse
+   pip install h5sparse-tensor
 
 
 Testing
