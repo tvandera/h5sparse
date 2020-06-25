@@ -1,0 +1,46 @@
+package:
+  name: "h5sparse-tensor"
+  version: "{{ environ.get("GIT_DESCRIBE_TAG", "0.99.9").lstrip("v") }}"
+
+source:
+  path: ../..
+
+build:
+  number: 1
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+
+requirements:
+  host:
+    - h5py
+    - numpy
+    - python
+    - scipy
+    - six
+    - pip
+    - nose
+  run:
+    - h5py
+    - numpy
+    - python
+    - scipy
+    - six
+
+test:
+  requires:
+    - nose
+  command:
+    - nosetest
+
+about:
+  home: "https://github.com/tvandera/h5sparse"
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "Scipy sparse matrix in HDF5."
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - tvandera
