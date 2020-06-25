@@ -1,11 +1,11 @@
 h5sparse
 ========
-.. image:: https://img.shields.io/travis/appier/h5sparse/master.svg
-   :target: https://travis-ci.org/appier/h5sparse
-.. image:: https://img.shields.io/pypi/v/h5sparse.svg
-   :target: https://pypi.python.org/pypi/h5sparse
-.. image:: https://img.shields.io/pypi/l/h5sparse.svg
-   :target: https://pypi.python.org/pypi/h5sparse
+.. image:: https://img.shields.io/travis/tvandera/h5sparse/master.svg
+   :target: https://travis-ci.org/tvandera/h5sparse
+.. image:: https://img.shields.io/pypi/v/h5sparse-tensor.svg
+   :target: https://pypi.python.org/pypi/h5sparse-tensor
+.. image:: https://img.shields.io/pypi/l/h5sparse-tensor.svg
+   :target: https://pypi.python.org/pypi/h5sparse-tensor
 
 Scipy sparse matrix in HDF5.
 
