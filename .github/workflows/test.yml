@@ -2,7 +2,7 @@ name: Test h5sparse
 
 on: [push]
 jobs:
-  build:
+  install_and_test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
