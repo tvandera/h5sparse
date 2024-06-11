@@ -1,0 +1,46 @@
+[project]
+name = "h5sparse-tensor"
+version = "0.2.3"
+description = "Scipy sparse matrices in HDF5. Sparse COO tensors in HDF5"
+readme = "README.rst"
+
+authors = [
+    { name = "Appier Inc." },
+    { name = "Tom Vander Aa" },
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "h5py",
+    "numpy",
+    "scipy",
+    "six",
+]
+
+license = {text = "MIT"}
+requires-python = ">=3.6"
+
+[project.urls]
+Homepage = "https://github.com/tvandera/h5sparse"
+
+# pyproject.toml
+[tool.pytest.ini_options]
+python_classes = "Test*"
+testpaths = [
+    "h5sparse/tests.py",
+]
