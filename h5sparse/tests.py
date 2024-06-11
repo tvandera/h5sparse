@@ -8,6 +8,7 @@ import scipy.sparse as ss
 
 import h5sparse
 
+
 def close_remove(fd, path):
     os.close(fd)
     os.remove(path)
