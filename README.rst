@@ -1,7 +1,8 @@
 h5sparse
 ========
-.. image:: https://img.shields.io/travis/tvandera/h5sparse/master.svg
-   :target: https://travis-ci.org/tvandera/h5sparse
+.. image:: https://img.shields.io/github/actions/workflow/status/tvandera/h5sparse/test.yml
+   :alt: GitHub Actions Workflow Status
+   :target: https://github.com/tvandera/h5sparse
 .. image:: https://img.shields.io/pypi/v/h5sparse-tensor.svg
    :target: https://pypi.python.org/pypi/h5sparse-tensor
 .. image:: https://img.shields.io/pypi/l/h5sparse-tensor.svg
