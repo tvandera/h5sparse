@@ -42,5 +42,5 @@ Homepage = "https://github.com/tvandera/h5sparse"
 [tool.pytest.ini_options]
 python_classes = "Test*"
 testpaths = [
-    "h5sparse/tests.py",
+    "tests/tests.py",
 ]
