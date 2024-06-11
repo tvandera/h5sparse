@@ -1,9 +1,0 @@
-six
-h5py
-numpy
-scipy
-
-pylint
-tox
-flake8
-nose
