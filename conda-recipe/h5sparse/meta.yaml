@@ -1,6 +1,6 @@
 package:
   name: "h5sparse-tensor"
-  version: {{ GIT_DESCRIBE_TAG }}
+  version: { { GIT_DESCRIBE_TAG.lstrip('v') } }
 
 source:
   git_url: ../..
